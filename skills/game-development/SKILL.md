@@ -44,6 +44,7 @@ Paths are relative to this skill's directory. Load one or two files for the curr
 | Netcode, authority, rollback, matchmaking, social systems | [multiplayer](references/multiplayer.md) |
 | Engine detection, lifecycle pitfalls, official documentation, editor tools | [engines](references/engines.md) |
 | Art direction, readability, UI/HUD, audio and music | [presentation](references/presentation.md) |
+| Making, importing or cleaning up sprites, tiles, 3D models, textures or AI-generated assets | [asset craft](references/asset-craft.md) |
 | Any PixelLab work (AI pixel-art characters, rotations, animation, palettes); read it before the first PixelLab call | [PixelLab](references/pixellab.md) |
 | Motor, visual, auditory and cognitive access; assist options | [accessibility](references/accessibility.md) |
 | Playtesting, user research, telemetry, what counts as evidence | [evaluation](references/evaluation.md) |

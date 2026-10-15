@@ -1,6 +1,6 @@
 # Presentation: art direction, UI, motion and audio
 
-Read this when the work concerns how a game looks, moves, sounds or communicates: art direction and asset consistency, readability of characters and effects, HUD and menus, UI text, animation clarity, sound as information and the mix. For player options (subtitles, colour-vision support, text scaling, reduced motion) read `accessibility.md` alongside it; for timing and input response read `game-feel.md`.
+Read this when the work concerns how a game looks, moves, sounds or communicates: art direction and asset consistency, readability of characters and effects, HUD and menus, UI text, animation clarity, sound as information and the mix. For player options (subtitles, colour-vision support, text scaling, reduced motion) read `accessibility.md` alongside it; for timing and input response read `game-feel.md`. For making sprites, tiles, 3D models and textures, or cleaning up generated assets, read `asset-craft.md`.
 
 ## Quick diagnosis
 
