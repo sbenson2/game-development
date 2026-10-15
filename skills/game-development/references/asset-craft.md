@@ -24,7 +24,7 @@ These are starting hypotheses. Confirm each with the capture or count in the las
 
 Choose the base resolution from the camera and the displays the game must support, then keep it. Godot's documentation notes that fractional factors give uneven pixels (640×360 in a 1366×768 window is about 2.13×), that 640×360 scales by whole numbers to 720p, 1080p, 1440p and 4K, and that typical pixel-art bases run from 256×224 to 640×480 [@godot2026-multiple-resolutions]. By the same arithmetic, 320×180 scales by 4, 6, 8 and 12 to those sizes.
 
-A fixed canvas is a production decision as much as a look. FAITH's artist set a 192×160 canvas, a 15 fps cap and a small on-screen colour count early, and found that keeping them consistent mattered more than accuracy [@smith2019-faith-pixel-art]. On Owlboy, moving from 800×600 to widescreen meant resizing rooms by hand, and with about 800 hero animations a full redraw was impossible, so some new art was simplified to match the old sprites [@madsen2017-owlboy].
+A fixed canvas is a production decision as much as a look. FAITH's artist set a 192×160 canvas, a 15 fps cap and a small on-screen colour count early, and found that keeping them consistent mattered more than accuracy [@smith2019-faith-pixel-art]. On Owlboy, moving from the original resolution to widescreen meant resizing rooms by hand, and with the hero's large set of animations a full redraw was impossible, so some new art was simplified to match the old sprites [@madsen2017-owlboy].
 
 Give every sprite, tile, effect and UI element one pixel density: one art pixel becomes one block on screen at the chosen scale. Mixing densities, or rotating and scaling sprites in the engine, breaks a set quickly. Plummer showed diagonal pixel lines breaking up when sprites rotate at native resolution, while horizontal and vertical lines hold [@plummer2020-hi-bit].
 
@@ -32,10 +32,10 @@ Checks: Are the base resolution and integer factor written in the project's note
 
 ### Colour, ramps and lines
 
-- **Palette.** Working on 8-bit-style backgrounds, Ferrari used three to seven colours per object and ordered each ramp from highlight through the turning edge to shadow, so a gradient fill can pre-shade a form. Value, saturation and warm-cool contrast all carry form; even an all-blue scene needs a touch of warmth or it reads as monochrome [@ferrari2016-8bit-graphics]. Bunk indexed a fixed palette of about 32 colours before animating, so one palette edit recoloured every frame [@bunk2018-high-res-pixel-art]. On UFO 50, Plummer followed self-imposed colours-per-tile and sprite limits but broke them where readability needed it [@plummer2020-hi-bit].
+- **Palette.** Working on 8-bit-style backgrounds, Ferrari used three to seven colours per object and ordered each ramp from highlight through the turning edge to shadow, so a gradient fill can pre-shade a form. Ferrari builds every picture on value, saturation and warm-cool contrast; even an all-blue scene needs a touch of warmth or it reads as monochrome [@ferrari2016-8bit-graphics]. Bunk indexed a small fixed palette before animating, so one palette edit recoloured every frame [@bunk2018-high-res-pixel-art]. On UFO 50, Plummer followed self-imposed colours-per-tile and sprite limits but broke them where readability needed it [@plummer2020-hi-bit].
 - **Dither and banding.** Both speakers moved from hand dither to banding for production reasons. For Ferrari, placing dither pixel by pixel was too slow across many backgrounds; for Bunk, dither was hard to keep aligned from frame to frame [@ferrari2016-8bit-graphics; @bunk2018-high-res-pixel-art].
 - **Tools.** Ferrari turns off anti-aliasing and interpolation for selections, pencils, fills and resizing [@ferrari2016-8bit-graphics].
-- **Lines.** Research on line rasterization codifies the conventions pixel artists follow by hand: a smooth rhythm of jaggies; preserved symmetry, aspect ratio and sharp angles; and hand-placed anti-aliasing. Image editors' automatic vector-to-raster conversion produces jaggies and broken lines instead [@inglis2012-pixelating-line-art; @inglis2013-superpixelator]. On the square grid, diagonal neighbours touch at a single point, so one-pixel diagonal features fall apart and become ambiguous [@kopf2011-depixelizing].
+- **Lines.** Research on line rasterization codifies the conventions pixel artists follow by hand: regular pixel-span patterns that avoid jaggies; preserved symmetry, aspect ratio and sharp angles; and hand-placed anti-aliasing. Image editors' automatic vector-to-raster conversion produces jaggies and broken lines instead [@inglis2012-pixelating-line-art; @inglis2013-superpixelator]. On the square grid, diagonal neighbours touch at a single point, so one-pixel diagonal lines that look connected at native size come apart under conventional magnification, and it can be ambiguous which diagonal neighbours belong together [@kopf2011-depixelizing].
 
 Hue-shifted ramps, selective outlines, avoiding pillow shading and removing orphan pixels are widespread practitioner conventions with no registered source here. Practitioners also disagree about some of them, hue shifting and outline colour in particular. Treat them as options to test against the game's style rules, not as laws.
 
@@ -57,7 +57,7 @@ Frame counts per cycle (walk, run, idle) and per-frame holds are game-specific, 
 
 ### Tiles
 
-Godot's terrain sets match tiles by corners and sides, by corners only, or by sides only; each tile's peering bits name the terrain expected at each neighbour. Alternative tiles do not inherit the base tile's properties, and Use Texture Padding adds a transparent border per tile to stop bleeding when filtering is on [@godot2026-using-tilesets]. Weight variation tiles with `TileData.probability` instead of scattering them by hand [@godot2026-tiledata]. Edge-matched (Wang) tile sets can fill large areas without a repeating period [@cohen2003-wang-tiles], and constraint-solving generators such as WaveFunctionCollapse work from local adjacency patterns in the same way [@karth2017-wfc].
+Godot's terrain sets match tiles by corners and sides, by corners only, or by sides only; each tile's peering bits name the terrain expected at each neighbour. Alternative tiles do not inherit the base tile's properties, and Use Texture Padding adds a transparent border per tile to stop bleeding when filtering is on [@godot2026-using-tilesets]. Weight variation tiles with `TileData.probability` instead of scattering them by hand [@godot2026-tiledata]. Edge-matched (Wang) tile sets can fill large areas without a repeating period [@cohen2003-wang-tiles], and constraint-solving generators such as WaveFunctionCollapse also work from local adjacency patterns, propagating constraints and restarting when they reach a contradiction [@karth2017-wfc].
 
 Checks: Paint a large test area with every variant, then look for repeats and seams at gameplay zoom.
 
@@ -65,7 +65,7 @@ Checks: Paint a large test area with every variant, then look for repeats and se
 
 ### Silhouette first, then the budget
 
-Geometry earns its cost at the silhouette; interior detail can live in textures. Appearance-preserving simplification keeps colour in textures and normals in normal maps, so a mesh can be simplified with little or no visible loss [@cohen1998-appearance-preserving]. A coarse, normal-mapped mesh still gives itself away at its polygonal outline [@sander2000-silhouette-clipping]. In Redd's low-poly work, curvature has a point of sufficiency: 16 sides read as a circle, and sphere rings could be halved unnoticed until banding showed. Parts that light and shadow must pass around were modelled in geometry rather than with alpha [@redd2017-low-poly].
+Geometry earns its cost at the silhouette; interior detail can live in textures. Appearance-preserving simplification keeps colour in textures and normals in normal maps, so a mesh can be simplified with little or no visible loss at the screen size its error bound was chosen for [@cohen1998-appearance-preserving]. A coarse, normal-mapped mesh still gives itself away at its polygonal outline [@sander2000-silhouette-clipping]. In Redd's low-poly work, curvature has a point of sufficiency: 16 sides read as a circle, and sphere rings could be halved unnoticed until banding showed. Parts that light and shadow must pass around were modelled in geometry rather than with alpha [@redd2017-low-poly].
 
 No registered source gives triangle budgets that hold across games. Godot picks automatic LODs by screen-space error, 1 px by default [@godot2026-mesh-lod], so on-screen size and the target hardware decide what is affordable. Set budgets per asset class by profiling on the target device.
 
@@ -76,7 +76,7 @@ Topology matters more for editing and deformation than for the GPU. Frostbite's 
 - **Even sampling.** Minimising texture stretch balances sampling across a surface [@sander2001-texture-mapping-pm], and seams between UV charts cause artifacts and make large painted patterns hard to keep continuous [@levy2002-lscm]. Hold one texel density across a set so neighbouring assets match. The number is a project decision; no registered source gives one.
 - **Padding.** Blender's bake margin exists because filtering and mipmapping bleed across UV seams [@blender2026-baking].
 - **Trim sheets.** Insomniac's small environment team standardised early on one trim-sheet layout and normal-map structure, for production speed, memory and runtime performance, with a UV-mapping script and a variation shader [@olsen2015-sunset-trims]. On The Ascent, one shared trim texture with mid-poly geometry, weighted normals and mesh decals covered almost all hard-surface assets. A uniform texture and shader setup kept materials swappable and optimisation predictable [@frick2022-the-ascent].
-- **Modular kits.** Bethesda defines a kit's footprint first, as a maximum extent: pieces build out only on tiling edges, with a buffer elsewhere. Pivots are fixed early, because moving one breaks every placement already made, and blank grey kits backfired, since early kits need the details that matter [@burgess2016-fallout4-modular]. Fortnite needed standard sizes, such as a minimum doorway width, so collision worked for every character [@ellis2018-fortnite].
+- **Modular kits.** Bethesda defines a kit's footprint first, as a maximum extent: pieces build out only on tiling edges, with a buffer elsewhere. Pivots are fixed early, because moving one breaks every placement already made, and blank grey kits backfired, since early kits need the details that matter [@burgess2016-fallout4-modular]. Fortnite needed standard sizes, such as a minimum doorway size so the largest characters could pass through any doorway [@ellis2018-fortnite].
 
 ### Baking
 
@@ -89,7 +89,7 @@ Checks: Bake one test asset and render it in Godot under the game's lighting bef
 
 ### PBR materials
 
-glTF fixes the conventions. Base colour and emissive are sRGB. The metal-roughness texture is linear, with roughness in green and metal in blue. Occlusion is linear, in red, and applies to indirect light only. Metalness 0 is non-metal and 1 is metal, and intermediate values blend the two [@khronos2026-gltf-spec]. Godot's ORM material takes the packed texture, and its AO map darkens only ambient light [@godot2026-standard-material]. Since occlusion acts only on indirect light, AO painted into albedo also darkens direct light, so keep it in its own channel. Roughness can be filtered from the normal map at import to reduce specular aliasing [@godot2026-importing-images].
+glTF fixes the conventions. Base colour and emissive are sRGB. The metal-roughness texture is linear, with roughness in green and metal in blue. Occlusion is linear, in red, and applies to indirect light only. Metalness 0 is non-metal and 1 is metal, and intermediate values blend the two [@khronos2026-gltf-spec]. Godot's ORM material takes the packed texture, and its AO map darkens only ambient light by default [@godot2026-standard-material]. Since occlusion acts only on indirect light, AO painted into albedo also darkens direct light, so keep it in its own channel. Roughness can be filtered from the normal map at import to reduce specular aliasing [@godot2026-importing-images].
 
 ### Stylised workflows
 
@@ -97,7 +97,7 @@ Stylised 3D is its own pipeline, not realistic 3D with less detail. Guilty Gear 
 
 ### LODs and outsourcing
 
-Godot generates LODs at import with the meshoptimizer library. Generation can produce errors, especially on skinned meshes, so it can be turned off per mesh, and hand-authored LODs and HLOD go in visibility ranges [@godot2026-mesh-lod; @godot2026-visibility-ranges]. Halo: Reach's automatic LOD system also kept an off switch for broken cases (the captions are partly garbled) [@wang2011-halo-reach-lod]. The underlying methods are quadric-error edge contraction and progressive meshes [@garland1997-quadric; @hoppe1996-progressive-meshes]. On Horizon Zero Dawn, Guerrilla outsourced objective work (final high-poly detail, baking, LODs) and kept subjective, collaborative work in house [@calvert2018-horizon-characters]. A written spec covering units, texel density, naming and the map set makes such a hand-off checkable.
+Godot generates LODs at import with the meshoptimizer library. Generation can produce errors, especially on skinned meshes, so it can be turned off per mesh, and hand-authored LODs and HLOD go in visibility ranges [@godot2026-mesh-lod; @godot2026-visibility-ranges]. Halo: Reach's automatic LOD system also kept an off switch for broken cases (the captions are partly garbled) [@wang2011-halo-reach-lod]. On Horizon Zero Dawn, Guerrilla outsourced objective work (final high-poly detail, baking, LODs) and kept subjective, collaborative work in house [@calvert2018-horizon-characters]. A written spec covering units, texel density, naming and the map set makes such a hand-off checkable.
 
 ## Blender → glTF → Godot 4
 
@@ -108,7 +108,7 @@ Godot generates LODs at import with the meshoptimizer library. Generation can pr
 | Transforms | Apply them before rigging and export. Blender's Unit Scale changes only the display, so model at true size | [@blender2026-apply-transforms; @blender2026-scene-units; @godot2026-model-export] |
 | Materials | Only node setups the exporter recognises survive, so bake the rest to images. Turn on Backface Culling in Blender, or Godot imports the material with culling off | [@khronos2026-gltf-blender-io; @godot2026-3d-formats] |
 | Edits after import | Never edit the imported scene; use an inherited scene or fix the source. Extracted `.tres` materials survive reimport, but renaming the material in Blender breaks the link | [@godot2026-import-configuration; @godot2026-advanced-import] |
-| Collision and hints | Object-name suffixes such as `-col`, `-convcol`, `-colonly`, `-noimp`, `-rigid`, `-navmesh` and `-occ` set node types at import | [@godot2026-node-suffixes] |
+| Collision and hints | Object-name suffixes such as `-col`, `-convcol`, `-colonly`, `-rigid`, `-navmesh` and `-occ` add or convert nodes at import, and `-noimp` removes a node | [@godot2026-node-suffixes] |
 | Lightmaps | Static Lightmaps mode generates UV2 with a lightmap texel size; OBJ cannot carry UV2 | [@godot2026-import-configuration; @godot2026-3d-formats] |
 | Textures | Textures used in 3D get VRAM compression and mipmaps; Size Limit helps mobile and web | [@godot2026-importing-images] |
 
@@ -118,11 +118,11 @@ Godot generates LODs at import with the meshoptimizer library. Generation can pr
 | --- | --- | --- | --- |
 | `display/window/stretch/mode` | `viewport` | Recommended for pixel art. `canvas_items` drops the 1:1 mapping of sprite pixels to screen pixels and is the default for projects created in 4.7 or later, so set it explicitly | [@godot2026-projectsettings; @godot2026-multiple-resolutions] |
 | `display/window/stretch/scale_mode` | `integer` | Each art pixel becomes an even block (Godot 4.2+). Set `Window.min_size` to the base size and prefer Exclusive Fullscreen | [@godot2026-multiple-resolutions; @godot2026-projectsettings] |
-| `rendering/textures/canvas_textures/default_texture_filter` | Nearest | The documented default (1) is not Nearest. A CanvasItem's `texture_filter` inherits from its parent, so one override covers a subtree | [@godot2026-projectsettings; @godot2026-canvasitem] |
+| `rendering/textures/canvas_textures/default_texture_filter` | Nearest | The documented default is 1, which is Linear, not Nearest, in the matching Viewport enum. A CanvasItem's `texture_filter` inherits from its parent, so one override covers a subtree | [@godot2026-projectsettings; @godot2026-viewport; @godot2026-canvasitem] |
 | Texture import | Lossless, VRAM compression off, mipmaps off unless the camera zooms far out | VRAM compression shows artifacts in 2D | [@godot2026-importing-images] |
 | `rendering/2d/snap/snap_2d_transforms_to_pixel` | On, without vertex snapping as well | Crisper, but motion is less smooth, especially with Camera2D smoothing; read only at startup | [@godot2026-projectsettings] |
 
-`viewport` mode cannot show sub-pixel motion, so if smooth scrolling matters more than strict pixels, the docs suggest `canvas_items` [@godot2026-multiple-resolutions]. Jitter while scrolling mostly comes from physics and refresh rates out of step, or from objects updated in different callbacks, rather than from the art. Physics interpolation addresses it [@godot2026-jitter-stutter].
+`viewport` mode cannot show sub-pixel motion, so if smooth scrolling matters more than strict pixels, the docs suggest `canvas_items` [@godot2026-multiple-resolutions]. Jitter while scrolling mostly comes from physics and refresh rates out of step, or from objects updated in different callbacks. Physics interpolation addresses it [@godot2026-jitter-stutter].
 
 ## AI-assisted generation
 
@@ -130,11 +130,11 @@ Godot generates LODs at import with the meshoptimizer library. Generation can pr
 
 Studies of professionals agree on where generators fit:
 - In interviews with 14 Finnish game professionals, most used image generators for inspiration, prototyping and pitching. More than half had made production art with them, yet most said the output could not be used as is, and nearly all edited it [@vimpari2023-adapt-or-die].
-- A synthesis of ten qualitative studies found the value clearest in ideation and prototyping, and weakest when assets enter the engine pipeline, where slowdowns appear. Unedited 3D output was rarely usable, and usable results came from curating many generations [@ternar2026-genai-synthesis].
-- In a study of 16 designers and developers, participants wanted such tools early in design, traded quality for many variations, and asked for standard, editable formats that fit their existing tools [@fukaya2026-asset-heuristics].
+- A synthesis of ten qualitative studies found the value clearest in ideation and prototyping, and weakest when assets enter the engine pipeline, where slowdowns appear. Unedited 3D output was rarely usable, and in image generation usable results came from curating many generations [@ternar2026-genai-synthesis].
+- In a study where 16 designers and developers, most of them early-career, tried non-functional mockups of such tools, participants preferred them for early design, mostly chose many variations over initial quality, and asked for standard, editable formats that fit their existing tools [@fukaya2026-asset-heuristics].
 - Romero presented machine-learning outputs such as style transfer as material for exploration, with artifacts and short of production quality; the artist decides when something is ready [@romero2019-deep-learning-tech-art].
 
-Keeping one style across a set is the recurring weakness. Vimpari's interviewees named it [@vimpari2023-adapt-or-die]. It was among the most frequent concerns in an analysis of 3,091 indie-developer posts [@panchanadikar2024-indie-genai], and the synthesis warns of stylistic convergence [@ternar2026-genai-synthesis]. The same indie posts show image generators used for placeholder content [@panchanadikar2024-indie-genai]. An untracked placeholder can ship, so log each one and make its replacement a release check.
+Keeping one style across a set is the recurring weakness. Vimpari's interviewees named it [@vimpari2023-adapt-or-die]. It was among the most frequent concerns in an analysis of 3,091 indie-developer posts [@panchanadikar2024-indie-genai], and the synthesis warns of stylistic convergence [@ternar2026-genai-synthesis]. The same indie posts describe generative AI supplying placeholder content [@panchanadikar2024-indie-genai]. An untracked placeholder can ship, so log each one and make its replacement a release check.
 
 ### What generators get wrong
 
@@ -147,7 +147,7 @@ Keeping one style across a set is the recurring weakness. Vimpari's interviewees
 | 3D shape | The same face repeated on several sides (the Janus problem), and appearance drifting between views | [@shi2024-mvdream; @poole2023-dreamfusion] |
 | 3D shape | Content painted onto flat surfaces; colour carved into geometry | [@poole2023-dreamfusion] |
 | Topology | Iso-surface (marching-cubes) meshes are dense, over-tessellated, oversmoothed or stair-stepped, lose sharp edges and decimate poorly | [@siddiqui2024-meshgpt; @chen2025-meshanything; @boss2025-sf3d] |
-| "Artist-like" meshes | Trained on meshes of up to about 800 faces; cleaner topology costs shape accuracy | [@siddiqui2024-meshgpt; @chen2025-meshanything] |
+| "Artist-like" meshes | Trained on meshes of up to about 800 faces; in MeshAnything, cleaner topology cost some shape accuracy | [@siddiqui2024-meshgpt; @chen2025-meshanything] |
 | Textures | Shading and highlights from the input baked into the asset; partial delighting fails in dark regions | [@xiang2025-trellis; @boss2025-sf3d; @wang2024-pbr-boosting] |
 | Materials | No material maps, or one roughness and one metallic value for the whole object | [@xiang2025-trellis; @boss2025-sf3d; @zeng2024-paint3d] |
 | UVs | Per-vertex colour instead of a UV layout, which forces dense meshes; view-by-view painting leaves seams and conflicting details | [@xiang2025-trellis; @boss2025-sf3d; @richardson2023-texture] |
@@ -162,12 +162,12 @@ This order is the skill's synthesis; no registered study tests it.
 Pixel art:
 1. Find the true pixel size and grid offset, then downscale to native resolution with one colour per block.
 2. Map colours to the project palette rather than an automatic one, and count unique colours afterwards.
-3. Repaint by hand what automatic methods skip, such as outlines, edge highlights and selective dither [@gerstner2012-pixelated-abstraction]. Remove soft edges the way Bunk cleans exported vector frames: cut slightly past the blur, then add pixels back [@bunk2018-high-res-pixel-art].
+3. Repaint by hand what automatic methods skip, such as edge highlights and selective dither [@gerstner2012-pixelated-abstraction]. Remove soft edges the way Bunk cleans exported vector frames: cut slightly past the blur, then add pixels back [@bunk2018-high-res-pixel-art].
 4. Clean animation frames together against one palette, and check the silhouette in every pose.
 5. Scale for display only by whole numbers, with nearest-neighbour filtering.
 
 3D:
-1. Treat the output as a sculpt or a reference, not a game mesh. Retopologise for the asset's job. Field-aligned remeshing gives quad-dominant (not all-quad) output aligned to sharp features [@jakob2015-instant-meshes]. Edge loops for deformation are a separate requirement, so deforming assets need hand-placed loops, while static props can often be decimated.
+1. Treat the output as a sculpt or a reference, not a game mesh. Retopologise for the asset's job. Instant Meshes, a fast field-aligned remesher, gives quad-dominant output with edges snapped to sharp features; one subdivision step makes it all-quad [@jakob2015-instant-meshes]. Edge loops for deformation are a separate requirement, so deforming assets need hand-placed loops, while static props can often be decimated.
 2. Unwrap the new mesh and rebake normals and colour from the generated mesh onto it, following the baking rules above. Remeshing invalidates the original UVs.
 3. Repaint or delight the albedo. Check it alone and under the game's lights, since baked-in lighting is the most consistently reported failure above.
 4. Rebuild materials to the glTF channel conventions, and do not assume generated roughness or metalness is meaningful.
@@ -177,10 +177,10 @@ Tool note: commercial generators differ in face counts, in whether material maps
 
 ### Provenance and rights
 
-- **US copyright.** The Copyright Office's 2025 report holds that output is protected only where a human determined sufficient expressive elements, such as perceptible human work within the output or creative arrangement or modification of it. Prompts alone are not enough [@uscopyright2025-part2]. Registration must disclose AI material that is more than de minimis and exclude it from the claim [@uscopyright2023-registration-guidance]. This covers US law only.
+- **US copyright.** The Copyright Office's 2025 report holds that output is protected only where a human determined sufficient expressive elements, such as perceptible human work within the output or creative arrangement or modification of it. With current generally available technology, prompts alone are not enough [@uscopyright2025-part2]. Registration must disclose AI material that is more than de minimis and exclude it from the claim [@uscopyright2023-registration-guidance]. This covers US law only.
 - **Steam.** Steam's content survey asks developers to disclose Pre-Generated and Live-Generated AI content, and to describe guardrails for live generation [@valve2026-steam-content-survey].
 - **Licences.** Romero warned that a GPLv3 dependency in a machine-learning tool would oblige open-sourcing the product, whereas MIT, Apache 2 and BSD need only credit [@romero2019-deep-learning-tech-art].
-- **Records.** Record, per asset, the tool, the inputs, the date and the human edits made. The synthesis recommends provenance records and clear licensing [@ternar2026-genai-synthesis]. Vimpari's interviewees also raised training on artists' work without consent, and concerns about jobs and devalued skills [@vimpari2023-adapt-or-die]. These belong in the production decision, not only the art review.
+- **Records.** Record, per asset, the tool, the inputs, the date and the human edits made. The synthesis recommends provenance records and clear licensing [@ternar2026-genai-synthesis]. Vimpari's interviewees also raised training on other artists' work without adequate compensation, and concerns about jobs and devalued skills [@vimpari2023-adapt-or-die]. These belong in the production decision, not only the art review.
 
 ## What a pro checks before shipping an asset
 
@@ -243,8 +243,6 @@ Every asset:
 - `mitchell2007-tf2` Jason Mitchell et al. (2007). Illustrative Rendering in Team Fortress 2. Proceedings of the 5th International Symposium on Non-Photorealistic Animation and Rendering (NPAR 2007). https://doi.org/10.1145/1274871.1274883 (peer-reviewed)
 - `godot2026-visibility-ranges` Godot Engine contributors (2026). Visibility ranges (HLOD). Godot Engine 4.7 documentation. https://docs.godotengine.org/en/4.7/tutorials/3d/visibility_ranges.html (official documentation)
 - `wang2011-halo-reach-lod` Xi Wang (2011). Automated Level of Detail Generation for HALO: REACH. Game Developers Conference 2011, Programming track. https://gdcvault.com/play/1014343/Automated-Level-of-Detail-Generation (GDC talk)
-- `garland1997-quadric` Michael Garland and Paul S. Heckbert (1997). Surface simplification using quadric error metrics. Proceedings of the 24th annual conference on Computer graphics and interactive techniques - SIGGRAPH '97, pp. 209-216. https://doi.org/10.1145/258734.258849 (peer-reviewed)
-- `hoppe1996-progressive-meshes` Hugues Hoppe (1996). Progressive meshes. Proceedings of the 23rd annual conference on Computer graphics and interactive techniques (SIGGRAPH '96), pp. 99-108. https://doi.org/10.1145/237170.237216 (peer-reviewed)
 - `calvert2018-horizon-characters` Daniel Calvert (2018). Repopulating the Earth: Character Production on 'Horizon Zero Dawn'. Game Developers Conference 2018, Visual Arts track. https://gdcvault.com/play/1024992/Repopulating-the-Earth-Character-Production (GDC talk)
 - `godot2026-3d-formats` Godot Engine contributors (2026). Available 3D formats. Godot Engine 4.7 documentation. https://docs.godotengine.org/en/4.7/tutorials/assets_pipeline/importing_3d_scenes/available_formats.html (official documentation)
 - `blender2026-apply-transforms` Blender Foundation (2026). Apply (Object > Apply). Blender 5.4 Manual. https://projects.blender.org/blender/blender-manual/raw/branch/main/manual/scene_layout/object/editing/apply.rst (official documentation)
@@ -252,6 +250,7 @@ Every asset:
 - `godot2026-advanced-import` Godot Engine contributors (2026). Advanced Import Settings. Godot Engine 4.7 documentation. https://docs.godotengine.org/en/4.7/tutorials/assets_pipeline/importing_3d_scenes/advanced_import_settings.html (official documentation)
 - `godot2026-node-suffixes` Godot Engine contributors (2026). Node type customization using name suffixes. Godot Engine 4.7 documentation. https://docs.godotengine.org/en/4.7/tutorials/assets_pipeline/importing_3d_scenes/node_type_customization.html (official documentation)
 - `godot2026-projectsettings` Godot Engine contributors (2026). ProjectSettings. Godot Engine 4.7 documentation. https://docs.godotengine.org/en/4.7/classes/class_projectsettings.html (official documentation)
+- `godot2026-viewport` Godot Engine contributors (2026). Viewport. Godot Engine 4.7 documentation. https://docs.godotengine.org/en/4.7/classes/class_viewport.html (official documentation)
 - `godot2026-canvasitem` Godot Engine contributors (2026). CanvasItem. Godot Engine 4.7 documentation. https://docs.godotengine.org/en/4.7/classes/class_canvasitem.html (official documentation)
 - `godot2026-jitter-stutter` Godot Engine contributors (2026). Fixing jitter, stutter and input lag. Godot Engine 4.7 documentation. https://docs.godotengine.org/en/4.7/tutorials/rendering/jitter_stutter.html (official documentation)
 - `vimpari2023-adapt-or-die` Veera Vimpari et al. (2023). "An Adapt-or-Die Type of Situation": Perception, Adoption, and Use of Text-to-Image-Generation AI by Game Industry Professionals. Proceedings of the ACM on Human-Computer Interaction 7 (CHI PLAY). https://doi.org/10.1145/3611025 (peer-reviewed)
@@ -259,7 +258,7 @@ Every asset:
 - `fukaya2026-asset-heuristics` Kaisei Fukaya et al. (2026). Heuristics for AI-Driven Graphical Asset Generation Tools in Game Design and Development Pipelines: A User-Centered Approach. International Journal of Human-Computer Interaction. https://doi.org/10.1080/10447318.2026.2632170 (peer-reviewed)
 - `romero2019-deep-learning-tech-art` Cesar Romero (2019). Super Powering Technical Artists Using Deep Learning. Game Developers Conference 2019, Visual Arts track. https://gdcvault.com/play/1026027/Super-Powering-Technical-Artists-Using (GDC talk)
 - `panchanadikar2024-indie-genai` Ruchi Panchanadikar and Guo Freeman (2024). "I'm a Solo Developer but AI is My New Ill-Informed Co-Worker": Envisioning and Designing Generative AI to Support Indie Game Development. Proceedings of the ACM on Human-Computer Interaction 8 (CHI PLAY). https://doi.org/10.1145/3677082 (peer-reviewed)
-- `gerstner2012-pixelated-abstraction` Timothy Gerstner et al. (2012). Pixelated Image Abstraction. NPAR 2012: Proceedings of the 10th International Symposium on Non-Photorealistic Animation and Rendering (Eurographics). https://pixl.cs.princeton.edu/pubs/Gerstner_2012_PIA/index.php (peer-reviewed)
+- `gerstner2012-pixelated-abstraction` Timothy Gerstner et al. (2012). Pixelated Image Abstraction. NPAR 2012: Proceedings of the 10th International Symposium on Non-Photorealistic Animation and Rendering (Eurographics). https://diglib.eg.org/items/b03015e5-e544-4c41-8225-262c073fbfbc (peer-reviewed)
 - `binninger2024-sd-pixl` Alexandre Binninger and Olga Sorkine-Hornung (2024). SD-πXL: Generating Low-Resolution Quantized Imagery via Score Distillation. SIGGRAPH Asia 2024 Conference Papers. https://doi.org/10.1145/3680528.3687570 (peer-reviewed)
 - `coutinho2024-sprite-imputation` Flávio Coutinho and Luiz Chaimowicz (2024). A Missing Data Imputation GAN for Character Sprite Generation. Anais do XXIII Simpósio Brasileiro de Jogos e Entretenimento Digital (SBGames 2024). https://doi.org/10.5753/sbgames.2024.241116 (peer-reviewed)
 - `shi2024-mvdream` Yichun Shi et al. (2024). MVDream: Multi-view Diffusion for 3D Generation. International Conference on Learning Representations (ICLR 2024). https://proceedings.iclr.cc/paper_files/paper/2024/hash/adbe936993aa7cf41e45054d8b72f183-Abstract-Conference.html (peer-reviewed)
